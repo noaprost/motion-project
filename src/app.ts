@@ -3,13 +3,17 @@ import { ImageComponent } from "./component/page/item/image.js";
 import { NoteComponent } from "./component/page/item/note.js";
 import { TodoComponent } from "./component/page/item/todo.js";
 import { VideoComponent } from "./component/page/item/video.js";
-import { Composable, PageComponent } from "./component/page/page.js";
+import {
+  Composable,
+  PageComponent,
+  PageItemComponent,
+} from "./component/page/page.js";
 
 class App {
   private readonly page: Component & Composable;
   // 우리 어플리케이션을 추가할 최상위 루트 요소를 받아옴
   constructor(appRoot: HTMLElement) {
-    this.page = new PageComponent();
+    this.page = new PageComponent(PageItemComponent);
     this.page.attachTo(appRoot);
 
     const image = new ImageComponent(
