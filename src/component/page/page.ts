@@ -1,3 +1,9 @@
+import {
+  EnableDragging,
+  EnableDrop,
+  EnableHover,
+} from "../../decorator/draggable.js";
+import { Draggable, Droppable, Hoverable } from "../common/type.js";
 import { BaseComponent, Component } from "../component.js";
 
 export interface Composable {
@@ -12,7 +18,7 @@ type OnDragStateListener<T extends Component> = (
 ) => void;
 
 // 어떤 UI를 가지든 상관없지만 close 버튼이 있어서 꼭 setOnCloseListener를 가져야 한다는 규격
-interface SectionContainer extends Component, Composable {
+interface SectionContainer extends Component, Composable, Draggable, Hoverable {
   setOnCloseListener(listener: OnCloseListener): void;
   setOnDragStateListener(listener: OnDragStateListener<SectionContainer>): void;
   muteChildren(state: "mute" | "unmute"): void;
@@ -26,6 +32,8 @@ type SectionContainerConstructor = {
   new (): SectionContainer;
 };
 
+@EnableDragging
+@EnableHover
 export class PageItemComponent
   extends BaseComponent<HTMLElement>
   implements SectionContainer
@@ -47,19 +55,6 @@ export class PageItemComponent
     buttonElement.onclick = () => {
       this.closeListener && this.closeListener();
     };
-
-    this.element.addEventListener("dragstart", (event: DragEvent) => {
-      this.onDragStart(event);
-    });
-    this.element.addEventListener("dragend", (event: DragEvent) => {
-      this.onDragEnd(event);
-    });
-    this.element.addEventListener("dragenter", (event: DragEvent) => {
-      this.onDragEnter(event);
-    });
-    this.element.addEventListener("dragleave", (event: DragEvent) => {
-      this.onDragLeave(event);
-    });
   }
   // Component를 규격한 어떤 아이든지 prop으로 받을 수 있음
   addChild(child: Component) {
@@ -118,31 +113,23 @@ export class PageItemComponent
   }
 }
 
+@EnableDrop
 // 페이지의 부모 컨테이너에 대한 요소를 담고 있음
 export class PageComponent
   extends BaseComponent<HTMLUListElement>
-  implements Composable
+  implements Composable, Droppable
 {
   private children = new Set<SectionContainer>();
   private dropTarget?: SectionContainer;
   private dragTarget?: SectionContainer;
   constructor(private pageItemConstructor: SectionContainerConstructor) {
     super(`<ul class="page"></ul>`);
-    this.element.addEventListener("dragover", (event: DragEvent) => {
-      this.onDragOver(event);
-    });
-    this.element.addEventListener("drop", (event: DragEvent) => {
-      this.onDrop(event);
-    });
   }
 
   // drag over나 drop은 event.preventDefault()를 꼭 호출해줘야함 - MDN
   // 그렇지 않으면 touch event나 pointer event에서 문제가 발생할 수 있음
-  onDragOver(event: DragEvent) {
-    event.preventDefault();
-  }
+  onDragOver(_: DragEvent) {}
   onDrop(event: DragEvent) {
-    event.preventDefault();
     // 여기에서 위치를 바꿔주면 됨
     if (!this.dropTarget) {
       return;
