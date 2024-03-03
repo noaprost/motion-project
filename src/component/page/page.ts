@@ -6,11 +6,14 @@ export interface Composable {
 
 type OnCloseListener = () => void;
 
+// 어떤 UI를 가지든 상관없지만 close 버튼이 있어서 꼭 setOnCloseListener를 가져야 한다는 규격
 interface SectionContainer extends Component, Composable {
   setOnCloseListener(listener: OnCloseListener): void;
 }
 
+// 생성자를 정의하는 타입
 type SectionContainerConstructor = {
+  // 아무것도 전달받지 않는 생성자인데, SectionContainer를 구현하는 어떤 클래스든 상관 없는 생성자
   new (): SectionContainer;
 };
 
