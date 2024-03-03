@@ -1,6 +1,8 @@
 export interface Component {
   attachTo: (parent: HTMLElement, position?: InsertPosition) => void;
   removeFrom(parent: HTMLElement): void;
+  // 전달받은 컴포넌트를 나 자신을 기준으로 position위치에 붙여줌
+  attach(component: Component, position?: InsertPosition): void;
 }
 
 /**
@@ -28,5 +30,9 @@ export class BaseComponent<T extends HTMLElement> implements Component {
       throw new Error("Parent mismatch!");
     }
     parent.removeChild(this.element);
+  }
+
+  attach(component: Component, position?: InsertPosition) {
+    component.attachTo(this.element, position);
   }
 }
