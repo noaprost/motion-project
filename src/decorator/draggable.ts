@@ -4,6 +4,8 @@ import { Component } from "./../component/component.js";
 type GConstructor<T = {}> = new (...args: any[]) => T;
 type DraggableClass = GConstructor<Component & Draggable>;
 
+// 아무 class나 감싸는 것이 아니라 Component와 Draggable를 규격하고 있는 class만 감쌀 수 있음
+// TBase타입의 class를 받아와서 그 class의 생성자를 한단계 감싸줌
 export function EnableDragging<TBase extends DraggableClass>(Base: TBase) {
   return class DraggableItem extends Base {
     constructor(...args: any[]) {
